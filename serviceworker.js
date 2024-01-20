@@ -18,7 +18,7 @@ const assets = [
     '/bootstrap.min.css',
     '/style.css',
     '/patterns/granite.jpg', '/patterns/grass.jpg', '/patterns/tiles.jpg', '/patterns/wood.jpg', 
-    '/patterns/check.png', '/patterns/favicon.jpg', '/patterns/grab.png', '/patterns/scissor.png', '/patterns/trash.png',  
+    '/patterns/check.png', '/patterns/sketching.png', '/patterns/grab.png', '/patterns/scissor.png', '/patterns/trash.png',  
 ]
 
 console.log('Service Woker First Installation Initialized')

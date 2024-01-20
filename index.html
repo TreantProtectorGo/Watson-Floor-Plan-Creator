@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/jpg" href="./icons/favicon.jpg">
+    <link rel="icon" type="image/png" href="./icons/sketching.png">
     <title>Floor Plan App v0.1</title>
     <link rel="stylesheet" href="bootstrap.min.css">
     <!-- <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet"> -->
@@ -176,11 +176,10 @@
       <button class="btn btn-default btn-sm" onclick="editor.updateDemolishStatus('no', 'wall', 'Wall')" id="demolishWallNo">No</button>
     </section>
     <br/>
-    <li><button class="btn btn-danger fully" id="wallTrash"><i class="fa fa-2x fa-trash-o" aria-hidden="true"></i></button></li>
+    <li><button class="btn btn-danger fully" id="wallTrash"><i class="fa fa-2x fa-trash" aria-hidden="true"></i></button></li>
     <li><button class="btn btn-info fully" style="margin-top:50px" onclick="fonc_button('select_mode');$('#boxinfo').html('Select mode');$('#wallTools').hide('300');$('#panel').show('300');"><i class="fa fa-2x fa-backward" aria-hidden="true" ></i></button></li>
     </ul>
   </div>
-
   <div id="objBoundingBox" class="leftBox" style="overflow: auto;">
     <h2>Modify object</h2>
     <hr/>
@@ -196,7 +195,7 @@
       <input type="number" id="bboxSlabFloorOffsetHeight" step="1" />
     </section>
     <br/>
-    <section id="objColumnHeight">
+    <section id="objColumnHeight" style="display: none;">
       <p>Column Height [<span id="bboxColumnHeightScale"></span>] : <span id="bboxColumnHeightVal"></span> cm</span></p>
       <input type="number" id="bboxColumnHeight" step="1" style="width: 100%;" /> 
     </section>
@@ -244,21 +243,21 @@
     </section>
     
 
-    <section id="objWaistSlabThickness">
+    <section id="objWaistSlabThickness" style="display: none;">
       <p>Waist Slab Thickness : <span id="bboxWaistSlabThicknessVal"></span> cm</span></p>
       <input type="number" id="bboxWaistSlabThickness" step="1" style="width: 100%;" /> 
       <br/>
     </section>
     
 
-    <section id="objStepsBase">
+    <section id="objStepsBase" style="display: none;">
       <p>Steps Base : <span id="bboxStepsBaseVal"></span> cm</span></p>
       <input type="number" id="bboxStepsBase" step="1" style="width: 100%;" /> 
       <br/>
     </section>
     
 
-    <section id="objStepsHeight">
+    <section id="objStepsHeight" style="display: none;">
       <p>Steps Height : <span id="bboxStepsHeightVal"></span> cm</span></p>
       <input type="number" id="bboxStepsHeight" step="1" style="width: 100%;" /> 
       <br/>
@@ -278,7 +277,7 @@
     </section>
     <br/>
 
-    <section id="demolisColumnStatus">
+    <section id="demolisColumnStatus" style="display: none;">
       <p>Demolish :</p>
       <button class="btn btn-default btn-sm" onclick="editor.updateDemolishStatus('yes', 'obj', 'Column')" id="demolishColumnYes">Yes</button>
       <button class="btn btn-default btn-sm" onclick="editor.updateDemolishStatus('no', 'obj', 'Column')" id="demolishColumnNo">No</button>
@@ -446,6 +445,8 @@
 
   <div id="panel" class="leftBox" ontouchstart='recordXY(event)' ontouchmove='detectSwipeLeft(event)'>
     <ul class="list-unstyled">
+      <li><img src="icons/watsons.png" alt="Watsons Logo" style="width: 95%;"/></li>
+      <br/>
       <li><button class="btn disabled halfy " id="undo" title="undo"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i>
       <button class="btn disabled halfy pull-right" id="redo" title="redo"><i class="fa fa-chevron-circle-right" aria-hidden="true"></i></button>
       </li>
@@ -560,11 +561,13 @@
 
   <div class="mb-3 file_container">
     <input type="file" style="display: none;" id="importfile"  accept=".json" onchange="importPlan()"/>
-    <button class="btn btn-primary shadow fully" type="button" onclick="document.getElementById('importfile').click()"><i class="fa fa-file-import" aria-hidden="true"></i>&nbsp;&nbsp;&nbsp;Import JSON</button>
+    <button class="btn btn-primary shadow fully" type="button" onclick="document.getElementById('importfile').click()"><i class="fa fa-file-import" aria-hidden="true"></i>&nbsp;&nbsp;&nbsp;&nbsp;Import JSON</button>
   </div>
+  <br />
+  <label for="project_name">&nbsp;Project Name</label>
   <input type="text" class="form-control"id="project_name" style="margin-bottom: 3%;" placeholder="Enter Project Name" aria-label="Enter Project Name" value="FloorPlan">  
-  <button class="btn fully btn-primary shadow" id="exportJson" title="Show report"><i class="fa fa-download" aria-hidden="true"></i>&nbsp;&nbsp;&nbsp;Save As JSON</button>
-  <button class="btn fully btn-primary shadow" id="report_mode" style="display: none;" title="Show report"><i class="fa fa-download" aria-hidden="true"></i>&nbsp;&nbsp;&nbsp;Save As JSON</button>
+  <button class="btn fully btn-primary shadow" id="exportJson" title="Show report"><i class="fa fa-download" aria-hidden="true"></i>&nbsp;&nbsp;Save As JSON</button>
+  <button class="btn fully btn-primary shadow" id="report_mode" style="display: none;" title="Show report"><i class="fa fa-download" aria-hidden="true"></i>&nbsp;&nbsp;Save As JSON</button>
   
   <li >
   <button style="display: none;"  class="btn btn-default halfy pull-right" onclick="fullscreen();this.style.display='none';$('#nofull_mode').show();" id="full_mode" title="Full screen"><i class="fa fa-expand" aria-hidden="true"></i></button>

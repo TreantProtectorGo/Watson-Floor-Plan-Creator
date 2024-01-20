@@ -1,11 +1,11 @@
 {
     "short_name": "Floor Plan",
-    "name": "Floor Plan App. v0.1",
+    "name": "Watson Floor Plan Creator",
     "description": "Simple Web Based Floor Plan Maker built with JavaScript. For quick floor planning, json import, export and more.",
     "icons": [
       {
-        "src": "./icons/favicon.jpg",
-        "type": "image/jpg",
+        "src": "./icons/sketching.png",
+        "type": "image/png",
         "sizes": "192x192",
         "purpose": "any"
       }
