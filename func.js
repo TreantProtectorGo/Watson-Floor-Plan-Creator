@@ -2365,8 +2365,8 @@ function carpentryCalc(classObj, typeObj, sizeObj, thickObj, dividerObj = 10, fi
     construc.params.waistSlabThickness = true;
     construc.params.stepsBase = true;
     construc.params.stepsHeight = true;
-    construc.params.width = sizeObj?sizeObj:25; // Resize width/height to obj size/thick
-    construc.params.height = thickObj?thickObj:75;
+    construc.params.width = sizeObj?sizeObj:50; // Resize width/height to obj size/thick
+    construc.params.height = thickObj?thickObj:150;
     if (typeObj == 'simpleStair') {
       construc.push({'path':"M "+(-sizeObj/2)+","+(-thickObj/2)+" L "+(-sizeObj/2)+","+thickObj/2+" L "+sizeObj/2+","+thickObj/2+" L "+sizeObj/2+","+(-thickObj/2)+" Z", 'fill': "#fff", 'stroke': "#000", 'strokeDashArray': ''});
 
@@ -2645,4 +2645,36 @@ function carpentryCalc(classObj, typeObj, sizeObj, thickObj, dividerObj = 10, fi
   }
 
   return construc;
+}
+
+function downloadSVG() {
+  var svg = document.getElementById("lin");
+  var clonedSvg = svg.cloneNode(true); 
+
+  var boxArea = clonedSvg.getElementById('boxArea');
+  var boxRib = clonedSvg.getElementById('boxRib');
+
+  var boxcarpentry = clonedSvg.getElementById('boxcarpentry');
+  var textElements = boxcarpentry.querySelectorAll('text');
+  for (var i = 0; i < textElements.length; i++) {
+    if (textElements[i].textContent === 'Beacon') {
+      textElements[i].parentNode.remove();
+    }
+  }
+  
+  clonedSvg.removeChild(boxArea);
+  clonedSvg.removeChild(boxRib);
+
+  var svgData = new XMLSerializer().serializeToString(clonedSvg);
+  var blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+
+  var url = URL.createObjectURL(blob);
+  var projectName = document.getElementById("project_name").value;
+  var downloadLink = document.createElement("a");
+  downloadLink.href = url;
+  downloadLink.download = projectName + ".svg";
+
+  document.body.appendChild(downloadLink);
+  downloadLink.click();
+  document.body.removeChild(downloadLink);
 }
