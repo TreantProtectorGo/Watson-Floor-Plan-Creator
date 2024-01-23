@@ -40,6 +40,12 @@ var originX_viewbox = 0;
 var originY_viewbox = 0;
 var zoom = 9;
 var factor = 1;
+let beaconIndex = 0;
+let beaconID = [];
+let GetBeaconID = '';
+let shelfID = [];
+let GetShelfID = '';
+let shelfIndex = 0;
 
 // SERVICE WORKER //
 window.addEventListener('load', () => {
@@ -243,7 +249,36 @@ function importPlan(){
         alert('JSON is not a valid Plan Type')
         return;
       }
-      
+      // const objData = getJson()
+      // let beaconIndexs = []
+
+      // for loop:
+      //     if beacon
+      //         beaconIndexs.push(i)
+      //         text = objData[i].beaconID
+      //         writeText
+
+      // beaconID = obj.data[0].objData[0].beaconID;
+      for (var i = 0; i < obj.data[0].objData.length; i++) {
+        if (obj.data[0].objData[i].hasOwnProperty("beaconID")) {
+          beaconID.push(obj.data[0].objData[i].beaconID)
+        }
+      }
+      beaconID = beaconID.reverse();
+
+      for (var i = 0; i < obj.data[0].objData.length; i++) {
+        if (obj.data[0].objData[i].hasOwnProperty("shelfID")) {
+          shelfID.push(obj.data[0].objData[i].shelfID)
+        }
+      }
+      shelfID = shelfID.reverse();
+
+      console.log('IMPORT JSON FILE')
+      console.log(obj)
+      console.log(obj.data)
+      console.log(beaconID)
+      console.log(shelfID)
+
       HISTORY.push(obj);
       
       HISTORY[0] = JSON.stringify(HISTORY[0]);
@@ -341,13 +376,17 @@ document.getElementById('exportJson').addEventListener("click", function() {
       for(let j = 0; j < tempData[i].objData.length; j++){
         var area = 0;
         var volume = 0;
-        
+        var saveBeaconID = beaconID
+        var saveShelfID = shelfID
+
         if(tempData[i].objData[j]['class'] == 'doorWindow'){
           area = ((tempData[i].objData[j].size / meter) * (tempData[i].objData[j].height / meter)).toFixed(2)
           data.data[i].objData[j]['area'] = area
         }else if(tempData[i].objData[j]['class'] == 'column'){
           volume = ((tempData[i].objData[j].columnHeight / meter) * (tempData[i].objData[j].size * 100 / (meter * meter)) * (tempData[i].objData[j].thick * 100 / (meter * meter))).toFixed(2)
           data.data[i].objData[j]['volume'] = volume
+          data.data[i].objData[j]['beaconID'] = saveBeaconID[beaconID.length - 1]
+          saveBeaconID.pop()
         }else if(tempData[i].objData[j]['class'] == 'slab'){
           area = ((tempData[i].objData[j].size * 100 / (meter * meter)) * (tempData[i].objData[j].thick * 100 / (meter * meter))).toFixed(2)
           volume = ((tempData[i].objData[j].slabFloorOffsetHeight / meter) * (tempData[i].objData[j].size * 100 / (meter * meter)) * (tempData[i].objData[j].thick * 100 / (meter * meter))).toFixed(2)
@@ -361,6 +400,8 @@ document.getElementById('exportJson').addEventListener("click", function() {
           let areaOfSteps = (tempData[i].objData[j].value * 1/2 * (tempData[i].objData[j].stepsBase * tempData[i].objData[j].stepsHeight) / 3600).toFixed(2)
           volume = (areaOfSteps * waistSlab).toFixed(2)
           data.data[i].objData[j]['volume'] = volume
+          data.data[i].objData[j]['shelfID'] = saveShelfID[shelfID.length - 1]
+          saveShelfID.pop()
         }
       }
     }
@@ -2205,7 +2246,7 @@ $('.beam').click(function(){
 $('.column').click(function(){
   $('#lin').css('cursor', 'crosshair');
   // multi = 0
-  $('#boxinfo').html('Add a column');
+  $('#boxinfo').html('Add a beacon');
   fonc_button('object_mode', this.id, this.id)
 })
 
@@ -2221,7 +2262,7 @@ $('#roof').click(function(){
 
 $('#stair_mode').click(function() {
     cursor('move');
-    $('#boxinfo').html('Add a staircase');
+    $('#boxinfo').html('Add a stair');
     fonc_button('object_mode', 'simpleStair');
 });
 
@@ -2276,87 +2317,6 @@ function carpentryCalc(classObj, typeObj, sizeObj, thickObj, dividerObj = 10, fi
   construc.params.typeSlabFloor = false;
   construc.params.demolish = false;
 
-  if (classObj == 'socle') {
-    construc.push({'path':"M "+(-sizeObj/2)+","+(-thickObj/2)+" L "+(-sizeObj/2)+","+thickObj/2+" L "+sizeObj/2+","+thickObj/2+" L "+sizeObj/2+","+(-thickObj/2)+" Z", 'fill': "#5cba79", 'stroke': "#5cba79", 'strokeDashArray': ''});
-  }
-  if (classObj == 'doorWindow') {
-    if (typeObj == 'simple') {
-      construc.push({'path':"M "+(-sizeObj/2)+","+(-thickObj/2)+" L "+(-sizeObj/2)+","+thickObj/2+" L "+sizeObj/2+","+thickObj/2+" L "+sizeObj/2+","+(-thickObj/2)+" Z", 'fill': "#ccc", 'stroke': "none", 'strokeDashArray': ''});
-      construc.push({'path': "M "+(-sizeObj/2)+","+(-thickObj/2)+" L "+(-sizeObj/2)+","+(-sizeObj-thickObj/2)+"  A"+sizeObj+","+sizeObj+" 0 0,1 "+sizeObj/2+","+(-thickObj/2), 'fill': "none", 'stroke': colorWall, 'strokeDashArray': ''});
-      construc.params.resize = true;
-      construc.params.resizeLimit.width = {min:40, max:120};
-    }
-    if (typeObj == 'double') {
-      construc.push({'path':"M "+(-sizeObj/2)+","+(-thickObj/2)+" L "+(-sizeObj/2)+","+thickObj/2+" L "+sizeObj/2+","+thickObj/2+" L "+sizeObj/2+","+(-thickObj/2)+" Z", 'fill': "#ccc", 'stroke': "none", 'strokeDashArray': ''});
-      construc.push({'path': "M "+(-sizeObj/2)+","+(-thickObj/2)+" L "+(-sizeObj/2)+","+(-sizeObj/2-thickObj/2)+"  A"+sizeObj/2+","+sizeObj/2+" 0 0,1 0,"+(-thickObj/2), 'fill': "none", 'stroke': colorWall, 'strokeDashArray': ''});
-      construc.push({'path': "M "+(sizeObj/2)+","+(-thickObj/2)+" L "+(sizeObj/2)+","+(-sizeObj/2-thickObj/2)+"  A"+sizeObj/2+","+sizeObj/2+" 0 0,0 0,"+(-thickObj/2), 'fill': "none", 'stroke': colorWall, 'strokeDashArray': ''});
-      construc.params.resize = true;
-      construc.params.resizeLimit.width = {min:40, max:160};
-    }
-    if (typeObj == 'pocket') {
-      construc.push({'path':"M "+(-sizeObj/2)+","+(-(thickObj/2)-4)+" L "+(-sizeObj/2)+","+thickObj/2+" L "+sizeObj/2+","+thickObj/2+" L "+sizeObj/2+","+(-(thickObj/2)-4)+" Z", 'fill': "#ccc", 'stroke': "none", 'strokeDashArray': 'none'});
-      construc.push({'path':"M "+(-sizeObj/2)+","+(-thickObj/2)+" L "+(-sizeObj/2)+","+thickObj/2+" M "+(sizeObj/2)+","+(thickObj/2)+" L "+(sizeObj/2)+","+(-thickObj/2), 'fill': "none", 'stroke': "#494646", 'strokeDashArray': '5 5'});
-      construc.push({'path':"M "+(-sizeObj/2)+","+(-thickObj/2)+" L "+(-sizeObj/2)+","+(-thickObj/2-5)+" L "+(+sizeObj/2)+","+(-thickObj/2-5)+" L "+(+sizeObj/2)+","+(-thickObj/2)+" Z", 'fill': "url(#hatch)", 'stroke': "#494646", 'strokeDashArray': ''});
-      construc.params.resize = true;
-      construc.params.resizeLimit.width = {min:60, max:200};
-    }
-    if (typeObj == 'aperture') {
-      construc.push({'path':"M "+(-sizeObj/2)+","+(-thickObj/2)+" L "+(-sizeObj/2)+","+thickObj/2+" L "+sizeObj/2+","+thickObj/2+" L "+sizeObj/2+","+(-thickObj/2)+" Z", 'fill': "#ccc", 'stroke': "#494646", 'strokeDashArray': '5,5'});
-      construc.push({'path':"M "+(-sizeObj/2)+","+(-(thickObj/2))+" L "+(-sizeObj/2)+","+thickObj/2+" L "+((-sizeObj/2)+5)+","+thickObj/2+" L "+((-sizeObj/2)+5)+","+(-(thickObj/2))+" Z", 'fill': "none", 'stroke': "#494646", 'strokeDashArray': 'none'});
-      construc.push({'path':"M "+((sizeObj/2)-5)+","+(-(thickObj/2))+" L "+((sizeObj/2)-5)+","+thickObj/2+" L "+(sizeObj/2)+","+thickObj/2+" L "+(sizeObj/2)+","+(-(thickObj/2))+" Z", 'fill': "none", 'stroke': "#494646", 'strokeDashArray': 'none'});
-      construc.params.resize = true;
-      construc.params.resizeLimit.width = {min:40, max:500};
-    }
-    if (typeObj == 'fix') {
-      construc.push({'path':"M "+(-sizeObj/2)+",-2 L "+(-sizeObj/2)+",2 L "+sizeObj/2+",2 L "+sizeObj/2+",-2 Z", 'fill': "#ccc", 'stroke': "none", 'strokeDashArray': ''});
-      construc.push({'path':"M "+(-sizeObj/2)+","+(-thickObj/2)+" L "+(-sizeObj/2)+","+thickObj/2+" M "+sizeObj/2+","+thickObj/2+" L "+sizeObj/2+","+(-thickObj/2), 'fill': "none", 'stroke': "#ccc", 'strokeDashArray': ''});
-      construc.params.resize = true;
-      construc.params.resizeLimit.width = {min:30, max:300};
-    }
-    if (typeObj == 'flap') {
-      construc.push({'path':"M "+(-sizeObj/2)+",-2 L "+(-sizeObj/2)+",2 L "+sizeObj/2+",2 L "+sizeObj/2+",-2 Z", 'fill': "#ccc", 'stroke': "none", 'strokeDashArray': ''});
-      construc.push({'path':"M "+(-sizeObj/2)+","+(-thickObj/2)+" L "+(-sizeObj/2)+","+thickObj/2+" M "+sizeObj/2+","+thickObj/2+" L "+sizeObj/2+","+(-thickObj/2), 'fill': "none", 'stroke': "#ccc", 'strokeDashArray': ''});
-      construc.push({'path': "M "+(-sizeObj/2)+","+(-thickObj/2)+" L "+((-sizeObj/2)+((sizeObj)*0.866))+","+((-sizeObj/2)-(thickObj/2))+"  A"+sizeObj+","+sizeObj+" 0 0,1 "+sizeObj/2+","+(-thickObj/2), 'fill': "none", 'stroke': colorWall, 'strokeDashArray': ''});
-      construc.params.resize = true;
-      construc.params.resizeLimit.width = {min:20, max:100};
-    }
-    if (typeObj == 'twin') {
-      construc.push({'path':"M "+(-sizeObj/2)+",-2 L "+(-sizeObj/2)+",2 L "+sizeObj/2+",2 L "+sizeObj/2+",-2 Z", 'fill': "#ccc", 'stroke': "none", 'strokeDashArray': ''});
-      construc.push({'path':"M "+(-sizeObj/2)+","+(-thickObj/2)+" L "+(-sizeObj/2)+","+thickObj/2+" M "+sizeObj/2+","+thickObj/2+" L "+sizeObj/2+","+(-thickObj/2), 'fill': "none", 'stroke': "#ccc", 'strokeDashArray': ''});
-      construc.push({'path': "M "+(-sizeObj/2)+","+(-thickObj/2)+" L "+((-sizeObj/2)+((sizeObj/2)*0.866))+","+(-sizeObj/4-thickObj/2)+"  A"+sizeObj/2+","+sizeObj/2+" 0 0,1 0,"+(-thickObj/2), 'fill': "none", 'stroke': colorWall, 'strokeDashArray': ''});
-      construc.push({'path': "M "+(sizeObj/2)+","+(-thickObj/2)+" L "+((sizeObj/2)+((-sizeObj/2)*0.866))+","+(-sizeObj/4-thickObj/2)+"  A"+sizeObj/2+","+sizeObj/2+" 0 0,0 0,"+(-thickObj/2), 'fill': "none", 'stroke': colorWall, 'strokeDashArray': ''});
-      construc.params.resize = true;
-      construc.params.resizeLimit.width = {min:40, max:200};
-    }
-    if (typeObj == 'bay') {
-      construc.push({'path':"M "+(-sizeObj/2)+","+(-thickObj/2)+" L "+(-sizeObj/2)+","+thickObj/2+" M "+sizeObj/2+","+thickObj/2+" L "+sizeObj/2+","+(-thickObj/2), 'fill': "none", 'stroke': "#ccc", 'strokeDashArray': ''});
-      construc.push({'path':"M "+(-sizeObj/2)+",-2 L "+(-sizeObj/2)+",0 L 2,0 L 2,2 L 3,2 L 3,-2 Z", 'fill': "#ccc", 'stroke': "none", 'strokeDashArray': ''});
-      construc.push({'path':"M -2,1 L -2,3 L "+sizeObj/2+",3 L "+sizeObj/2+",1 L -1,1 L -1,-1 L -2,-1 Z", 'fill': "#ccc", 'stroke': "none", 'strokeDashArray': ''});
-      construc.params.resize = true;
-      construc.params.resizeLimit.width = {min:60, max:300};
-    }
-  }
-
-  if (classObj == 'measure') {
-    construc.params.bindBox = true;
-    // console.log(sizeObj)
-    construc.push({'path':"M-"+(sizeObj/2)+",0 l10,-10 l0,8 l"+(sizeObj-20)+",0 l0,-8 l10,10 l-10,10 l0,-8 l-"+(sizeObj-20)+",0 l0,8 Z", 'fill': "#729eeb", 'stroke': "none", 'strokeDashArray': ''});
-    }
-
-  if (classObj == 'boundingBox') {
-    construc.push({'path':"M"+(-sizeObj/2-10)+","+(-thickObj/2-10)+" L"+(sizeObj/2+10)+","+(-thickObj/2-10)+" L"+(sizeObj/2+10)+","+(thickObj/2+10)+" L"+(-sizeObj/2-10)+","+(thickObj/2+10)+" Z", 'fill':'none', 'stroke':"#aaa", 'strokeDashArray': ''});
-
-    // construc.push({'path':"M"+dividerObj[0].x+","+dividerObj[0].y+" L"+dividerObj[1].x+","+dividerObj[1].y+" L"+dividerObj[2].x+","+dividerObj[2].y+" L"+dividerObj[3].x+","+dividerObj[3].y+" Z", 'fill':'none', 'stroke':"#000", 'strokeDashArray': ''});
-  }
-
-  //typeObj = color  dividerObj = text
-  if (classObj == 'text') {
-    construc.params.bindBox = true;
-    construc.params.move = true;
-    construc.params.rotate = true;
-    construc.push({'text': dividerObj.text, 'x': '0', 'y':'0', 'fill': typeObj, 'stroke': typeObj, 'fontSize': dividerObj.size+'px',"strokeWidth": "0px"});
-  }
-
   if (classObj == 'stair') {
     construc.params.bindBox = true;
     construc.params.move = true;
@@ -2367,203 +2327,31 @@ function carpentryCalc(classObj, typeObj, sizeObj, thickObj, dividerObj = 10, fi
     construc.params.stepsHeight = true;
     construc.params.width = sizeObj?sizeObj:50; // Resize width/height to obj size/thick
     construc.params.height = thickObj?thickObj:150;
+    
     if (typeObj == 'simpleStair') {
       construc.push({'path':"M "+(-sizeObj/2)+","+(-thickObj/2)+" L "+(-sizeObj/2)+","+thickObj/2+" L "+sizeObj/2+","+thickObj/2+" L "+sizeObj/2+","+(-thickObj/2)+" Z", 'fill': "#fff", 'stroke': "#000", 'strokeDashArray': ''});
-
-      var heightStep = thickObj / (dividerObj);
-      for (var i =1; i < dividerObj+1; i++) {
-        construc.push({'path':"M "+(-sizeObj/2)+","+((-thickObj/2)+(i*heightStep))+" L "+(sizeObj/2)+","+((-thickObj/2)+(i*heightStep)), 'fill': "none", 'stroke': "#000", 'strokeDashArray': 'none'});
+      
+      var indexOverTwo = Math.floor(shelfIndex/2);
+      if (indexOverTwo < shelfID.length) {
+        var heightStep = thickObj / (dividerObj);
+        // for (var i =1; i < dividerObj+1; i++) {
+        //   construc.push({'path':"M "+(-sizeObj/2)+","+((-thickObj/2)+(i*heightStep))+" L "+(sizeObj/2)+","+((-thickObj/2)+(i*heightStep)), 'fill': "none", 'stroke': "#000", 'strokeDashArray': 'none'});
+        // }
+        construc.push({'text': shelfID[indexOverTwo], 'x': '0', 'y':'0', 'fill': "#000", 'stroke': "#000", 'fontSize': '0.9em',"strokeWidth": "0.4px"});
+      } else {
+        var heightStep = thickObj / (dividerObj);
+        // for (var i =1; i < dividerObj+1; i++) {
+        //   construc.push({'path':"M "+(-sizeObj/2)+","+((-thickObj/2)+(i*heightStep))+" L "+(sizeObj/2)+","+((-thickObj/2)+(i*heightStep)), 'fill': "none", 'stroke': "#000", 'strokeDashArray': 'none'});
+        // }
+        construc.push({'text': GetShelfID, 'x': '0', 'y':'0', 'fill': "#000", 'stroke': "#000", 'fontSize': '0.9em',"strokeWidth": "0.4px"});
+        console.log("shelfIndex " + shelfIndex + " beaconID " + GetShelfID)
       }
       construc.params.resizeLimit.width = {min:40, max:200};
       construc.params.resizeLimit.height = {min:40, max:400};
+      console.log('shelf beaconIndex' + beaconIndex)
     }
-
-  }
-
-  if (classObj == 'energy') {
-    construc.params.bindBox = true;
-    construc.params.move = true;
-    construc.params.resize = false;
-    construc.params.rotate = false;
-    if (typeObj == 'gtl') {
-      construc.push({'path': "m -20,-20 l 40,0 l0,40 l-40,0 Z", 'fill': "#fff", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'text': "GTL", 'x': '0', 'y':'5', 'fill': "#333333", 'stroke': "none", 'fontSize': '0.9em',"strokeWidth": "0.4px"});
-      construc.params.width = 40;
-      construc.params.height = 40;
-      construc.family = 'stick';
-    }
-    if (typeObj == 'switch') {
-      construc.push({'path': qSVG.circlePath(0, 0, 16), 'fill': "#fff", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': qSVG.circlePath(-2, 4, 5), 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "m 0,0 5,-9", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.params.width = 36;
-      construc.params.height = 36;
-      construc.family = 'stick';
-
-    }
-    if (typeObj == 'doubleSwitch') {
-      construc.push({'path': qSVG.circlePath(0, 0, 16), 'fill': "#fff", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': qSVG.circlePath(0,0, 4), 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "m 2,-3 5,-8 3,2", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "m -2,3 -5,8 -3,-2", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.params.width = 36;
-      construc.params.height = 36;
-      construc.family = 'stick';
-    }
-    if (typeObj == 'dimmer') {
-      construc.push({'path': qSVG.circlePath(0, 0, 16), 'fill': "#fff", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': qSVG.circlePath(-2, 4, 5), 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "m 0,0 5,-9", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "M -2,-6 L 10,-4 L-2,-2 Z", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.params.width = 36;
-      construc.params.height = 36;
-      construc.family = 'stick';
-    }
-    if (typeObj == 'plug') {
-      construc.push({'path':qSVG.circlePath(0, 0, 16), 'fill': "#fff", 'stroke': "#000", 'strokeDashArray': ''});
-      construc.push({'path': "M 10,-6 a 10,10 0 0 1 -5,8 10,10 0 0 1 -10,0 10,10 0 0 1 -5,-8", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "m 0,3 v 7", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "m -10,4 h 20", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.params.width = 36;
-      construc.params.height = 36;
-      construc.family = 'stick';
-    }
-    if (typeObj == 'plug20') {
-      construc.push({'path':qSVG.circlePath(0, 0, 16), 'fill': "#fff", 'stroke': "#000", 'strokeDashArray': ''});
-      construc.push({'path': "M 10,-6 a 10,10 0 0 1 -5,8 10,10 0 0 1 -10,0 10,10 0 0 1 -5,-8", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "m 0,3 v 7", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "m -10,4 h 20", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'text': "20A", 'x': '0', 'y':'-5', 'fill': "#333333", 'stroke': "none", 'fontSize': '0.65em',"strokeWidth": "0.4px"});
-      construc.params.width = 36;
-      construc.params.height = 36;
-      construc.family = 'stick';
-    }
-    if (typeObj == 'plug32') {
-      construc.push({'path':qSVG.circlePath(0, 0, 16), 'fill': "#fff", 'stroke': "#000", 'strokeDashArray': ''});
-      construc.push({'path': "M 10,-6 a 10,10 0 0 1 -5,8 10,10 0 0 1 -10,0 10,10 0 0 1 -5,-8", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "m 0,3 v 7", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "m -10,4 h 20", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'text': "32A", 'x': '0', 'y':'-5', 'fill': "#333333", 'stroke': "none", 'fontSize': '0.65em',"strokeWidth": "0.4px"});
-      construc.params.width = 36;
-      construc.params.height = 36;
-      construc.family = 'stick';
-    }
-    if (typeObj == 'roofLight') {
-      construc.push({'path':qSVG.circlePath(0, 0, 16), 'fill': "#fff", 'stroke': "#000", 'strokeDashArray': ''});
-      construc.push({'path': "M -8,-8 L 8,8 M -8,8 L 8,-8", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.params.width = 36;
-      construc.params.height = 36;
-      construc.family = 'free';
-    }
-    if (typeObj == 'wallLight') {
-      construc.push({'path':qSVG.circlePath(0, 0, 16), 'fill': "#fff", 'stroke': "#000", 'strokeDashArray': ''});
-      construc.push({'path': "M -8,-8 L 8,8 M -8,8 L 8,-8", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "M -10,10 L 10,10", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.params.width = 36;
-      construc.params.height = 36;
-      construc.family = 'stick';
-    }
-    if (typeObj == 'www') {
-      construc.push({'path': "m -20,-20 l 40,0 l0,40 l-40,0 Z", 'fill': "#fff", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'text': "@", 'x': '0', 'y':'4', 'fill': "#333333", 'stroke': "none", 'fontSize': '1.2em',"strokeWidth": "0.4px"});
-      construc.params.width = 40;
-      construc.params.height = 40;
-      construc.family = 'free';
-    }
-    if (typeObj == 'rj45') {
-      construc.push({'path':qSVG.circlePath(0, 0, 16), 'fill': "#fff", 'stroke': "#000", 'strokeDashArray': ''});
-      construc.push({'path': "m-10,5 l0,-10 m20,0 l0,10", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "m 0,5 v 7", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "m -10,5 h 20", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'text': "RJ45", 'x': '0', 'y':'-5', 'fill': "#333333", 'stroke': "none", 'fontSize': '0.5em',"strokeWidth": "0.4px"});
-      construc.params.width = 36;
-      construc.params.height = 36;
-      construc.family = 'stick';
-    }
-    if (typeObj == 'tv') {
-      construc.push({'path':qSVG.circlePath(0, 0, 16), 'fill': "#fff", 'stroke': "#000", 'strokeDashArray': ''});
-      construc.push({'path': "m-10,5 l0-10 m20,0 l0,10", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "m-7,-5 l0,7 l14,0 l0,-7", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "m 0,5 v 7", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "m -10,5 h 20", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'text': "TV", 'x': '0', 'y':'-5', 'fill': "#333333", 'stroke': "none", 'fontSize': '0.5em',"strokeWidth": "0.4px"});
-      construc.params.width = 36;
-      construc.params.height = 36;
-      construc.family = 'stick';
-    }
-
-    if (typeObj == 'heater') {
-      construc.push({'path':qSVG.circlePath(0, 0, 16), 'fill': "#fff", 'stroke': "#000", 'strokeDashArray': ''});
-      construc.push({'path': "m-15,-4 l30,0", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "m-14,-8 l28,0", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "m-11,-12 l22,0", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "m-16,0 l32,0", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "m-15,4 l30,0", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "m-14,8 l28,0", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "m-11,12 l22,0", 'fill': "none", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.params.width = 36;
-      construc.params.height = 36;
-      construc.family = 'stick';
-    }
-    if (typeObj == 'radiator') {
-      construc.push({'path': "m -20,-10 l 40,0 l0,20 l-40,0 Z", 'fill': "#fff", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "M -15,-10 L -15,10", 'fill': "#fff", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "M -10,-10 L -10,10", 'fill': "#fff", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "M -5,-10 L -5,10", 'fill': "#fff", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "M -0,-10 L -0,10", 'fill': "#fff", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "M 5,-10 L 5,10", 'fill': "#fff", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "M 10,-10 L 10,10", 'fill': "#fff", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'path': "M 15,-10 L 15,10", 'fill': "#fff", 'stroke': "#333", 'strokeDashArray': ''});
-      construc.params.width = 40;
-      construc.params.height = 20;
-      construc.family = 'stick';
-    }
-    
-    if(['bed','cabinet','doublebed','table'].indexOf(typeObj) >= 0){
-      classObj = 'furniture';
-      construc.params.width = sizeObj?sizeObj:100; // Resize width/height to obj size/thick
-      construc.params.height = thickObj?thickObj:60;
-    }
-
-    if (typeObj == 'bed') {
-      construc.push({'path': "m "+(-sizeObj/2)+","+(-thickObj/2)+" l "+(sizeObj)+",0 l0,"+(thickObj)+" l"+(-sizeObj)+",0 Z", 'fill': fill, 'stroke': "#333", 'strokeDashArray': ''});
-      construc.push({'text': "Bed", 'x': '0', 'y':'5', 'fill': "#333333", 'stroke': "none", 'fontSize': '0.8em',"strokeWidth": "0.4px"});
-      construc.family = 'stick';
-      construc.params.resizeLimit.width = {min:80, max:200};
-      construc.params.resizeLimit.height = {min:30, max:150};
-    }
-
-  }
-
-  if (classObj == 'furniture') {
-    construc.params.bindBox = true;
-    construc.params.move = true;
-    construc.params.resize = true;
-    construc.params.rotate = true;
-  }
-
-  if (classObj == 'beam'){
-
-    construc.params.bindBox = true;
-    construc.params.move = true;
-    construc.params.resize = true;
-    construc.params.rotate = true;
-    construc.params.resize = true;
-    construc.params.beamHeight = true;
-    construc.params.typeBeam = true;
-    construc.params.width = sizeObj?sizeObj:400; // Resize width/height to obj size/thick
-    construc.params.height = thickObj?thickObj:20;
-
-    
-    if (typeObj == 'simpleBeam'){
-      construc.push({'path': "m "+(-sizeObj/2)+","+(-thickObj/2)+" l "+(sizeObj)+",0 l0,"+(thickObj)+" l"+(-sizeObj)+",0 Z", 'fill': fill, 'stroke': "red", 'strokeDashArray': '-'});
-      construc.push({'text': "Beam", 'x': '0', 'y':'5', 'fill': "#333333", 'stroke': "red", 'fontSize': '0.8em',"strokeWidth": "0.4px"});
-      // construc.push({'text': construc.params.width, 'x': '0', 'y': '20', 'fill': "#333333", 'stroke': "red", 'fontSize': '0.8em',"strokeWidth": "0.4px"})
-      construc.family = 'stick';
-      
-      construc.params.resizeLimit.width = {min:10, max:1000};
-      construc.params.resizeLimit.height = {min:5, max:1000};
-    }
+    //index++ is needed
+    shelfIndex++;
   }
 
   if (classObj == 'column' ){
@@ -2576,65 +2364,35 @@ function carpentryCalc(classObj, typeObj, sizeObj, thickObj, dividerObj = 10, fi
 
     construc.params.width = sizeObj?sizeObj:45; 
     construc.params.height = thickObj?thickObj:45;
-
     
+    var beaconName =  "beacon";
     if (typeObj == 'simpleColumn'){
+      let indexOverTwo = Math.floor(beaconIndex/2);
+      if (indexOverTwo < beaconID.length) {
       construc.push({'path': "m "+(-sizeObj/2)+","+(-thickObj/2)+" l "+(sizeObj)+",0 l0,"+(thickObj)+" l"+(-sizeObj)+",0 Z", 'fill': fill, 'stroke': "red", 'strokeDashArray': '-'});
-      construc.push({'text': "Beacon", 'x': '0', 'y':'5', 'fill': "#333333", 'stroke': "black", 'fontSize': '0.75em',"strokeWidth": "0.4px"});
-      
+      construc.push({'text': beaconID[indexOverTwo], 'x': '0', 'y':'-6', 'fill': "#333333", 'stroke': "black", 'fontSize': '0.75em',"strokeWidth": "0.4px"});
+      construc.push({'text': beaconName, 'x': '0', 'y':'7', 'fill': "#333333", 'stroke': "black", 'fontSize': '0.75em',"strokeWidth": "0.4px"});
       construc.family = 'stick';
-      
+      console.log("indexOverTwo " + indexOverTwo + " beaconID " + beaconID[beaconIndex])
+      } else {
+        construc.push({'path': "m "+(-sizeObj/2)+","+(-thickObj/2)+" l "+(sizeObj)+",0 l0,"+(thickObj)+" l"+(-sizeObj)+",0 Z", 'fill': fill, 'stroke': "red", 'strokeDashArray': '-'});
+        construc.push({'text': GetBeaconID, 'x': '0', 'y':'-6', 'fill': "#333333", 'stroke': "black", 'fontSize': '0.75em',"strokeWidth": "0.4px"});
+        construc.push({'text': beaconName, 'x': '0', 'y':'7', 'fill': "#333333", 'stroke': "black", 'fontSize': '0.75em',"strokeWidth": "0.4px"});
+        construc.family = 'stick';
+        console.log("beaconIndex " + beaconIndex + " beaconID " + GetBeaconID)
+      }
+
+      //classObj, typeObj, sizeObj, thickObj,
+      // console.log("typeObj")
+      // console.log(typeObj)
+      // console.log("sizeObj")
       construc.params.resizeLimit.width = {min:10, max:1000};
       construc.params.resizeLimit.height = {min:10, max:1000};
       construc.params.resizeLimit.columnHeight = {min: 10, max: 1000}
     }
+    beaconIndex++;
   }
   
-  if (classObj == 'slab' ){
-    // While Creating Slab, try to get length equal to labelWidth and height for easy ness...
-    var labelWidth = 500;
-    var labelHeight = 500;
-    if (ROOM.length > 0) {
-      var minX, minY, maxX, maxY;
-      for (var i = 0; i < WALLS.length; i++) {
-        var px = WALLS[i].start.x;
-        var py = WALLS[i].start.y;
-        if (!i || px < minX) minX = px;
-        if (!i || py < minY) minY = py;
-        if (!i || px > maxX) maxX = px;
-        if (!i || py > maxY) maxY = py;
-        var px = WALLS[i].end.x;
-        var py = WALLS[i].end.y;
-        if (!i || px < minX) minX = px;
-        if (!i || py < minY) minY = py;
-        if (!i || px > maxX) maxX = px;
-        if (!i || py > maxY) maxY = py;
-      }
-
-      labelWidth = ((maxX - minX) / meter).toFixed(2) * meter;
-      labelHeight = ((maxY - minY) / meter).toFixed(2) * meter;
-    }
-
-    construc.params.bindBox = true;
-    construc.params.move = true;
-    construc.params.resize = true;
-    construc.params.rotate = true;
-    construc.params.demolish = true;
-    construc.params.slabFloorOffsetHeight = true;
-    construc.params.typeSlabFloor = true;
-    construc.params.width = sizeObj?sizeObj:labelWidth; 
-    construc.params.height = thickObj?thickObj:labelHeight;
-    
-    if (typeObj == 'simpleSlab'){
-      construc.push({'path': "m "+(-sizeObj/2)+","+(-thickObj/2)+" l "+(sizeObj)+",0 l0,"+(thickObj)+" l"+(-sizeObj)+",0 Z", 'fill': fill, 'stroke': "darkslategray", 'strokeDashArray': '10 3 3 3', 'fillOpacity': '0.1', "strokeWidth": "5px"});      
-      construc.push({'text': "Slab", 'x': '0', 'y':thickObj/2-10, 'fill': "#333333", 'stroke': "none", 'fontSize': '1.2em',"strokeWidth": "0.5px"});
-      construc.family = 'stick';
-      
-      construc.params.resizeLimit.width = {min:10, max:10000};
-      construc.params.resizeLimit.height = {min:10, max:10000};
-    }
-  }
-
   if(classObj == 'roof'){
     WALLS.push({"roof":true,"thick":6,"start":{"x":540,"y":194},"end":{"x":540,"y":734},"type":"normal","parent":Math.round(Math.random()*500),"child":1,"angle":1.5707963267948966,"equations":{"up":{"A":"v","B":550},"down":{"A":"v","B":530},"base":{"A":"v","B":540}},"coords":[{"x":550,"y":204},{"x":530,"y":184},{"x":530,"y":744},{"x":550,"y":724}],"graph":{"0":{},"context":{},"length":1}},{"roof":true,"thick":6,"start":{"x":540,"y":734},"end":{"x":1080,"y":734},"type":"normal","parent":Math.round(Math.random()*500),"child":2,"angle":0,"equations":{"up":{"A":"h","B":724},"down":{"A":"h","B":744},"base":{"A":"h","B":734}},"coords":[{"x":550,"y":724},{"x":530,"y":744},{"x":1090,"y":744},{"x":1070,"y":724}],"graph":{"0":{},"context":{},"length":1}},{"roof":true,"thick":6,"start":{"x":1080,"y":734},"end":{"x":1080,"y":194},"type":"normal","parent":Math.round(Math.random()*500),"child":3,"angle":-1.5707963267948966,"equations":{"up":{"A":"v","B":1070},"down":{"A":"v","B":1090},"base":{"A":"v","B":1080}},"coords":[{"x":1070,"y":724},{"x":1090,"y":744},{"x":1090,"y":184},{"x":1070,"y":204}],"graph":{"0":{},"context":{},"length":1}},{"roof":true,"thick":6,"start":{"x":1080,"y":194},"end":{"x":540,"y":194},"type":"normal","parent":Math.round(Math.random()*500),"child":0,"angle":3.141592653589793,"equations":{"up":{"A":"h","B":204},"down":{"A":"h","B":184},"base":{"A":"h","B":194}},"coords":[{"x":1070,"y":204},{"x":1090,"y":184},{"x":530,"y":184},{"x":550,"y":204}],"graph":{"0":{},"context":{},"length":1}},{"roof":true,"thick":15,"start":{"x":809.5822496304128,"y":194},"end":{"x":809.5822496304128,"y":734},"type":"normal","parent":Math.round(Math.random()*500),"child":null,"angle":1.5707963267948966,"equations":{"up":{"A":"v","B":819.5822496304128},"down":{"A":"v","B":799.5822496304128},"base":{"A":"v","B":809.5822496304128}},"coords":[{"x":819.5822496304128,"y":194},{"x":799.5822496304128,"y":194},{"x":799.5822496304128,"y":734},{"x":819.5822496304128,"y":734}],"backUp":false,"graph":{"0":{},"context":{},"length":1}});
     
@@ -2643,7 +2401,7 @@ function carpentryCalc(classObj, typeObj, sizeObj, thickObj, dividerObj = 10, fi
     save();
     load(HISTORY.length - 1);
   }
-
+  //beaconIndex++;
   return construc;
 }
 
@@ -2656,8 +2414,9 @@ function downloadSVG() {
 
   var boxcarpentry = clonedSvg.getElementById('boxcarpentry');
   var textElements = boxcarpentry.querySelectorAll('text');
+  
   for (var i = 0; i < textElements.length; i++) {
-    if (textElements[i].textContent === 'Beacon') {
+    if (textElements[i].textContent == 'beacon') {
       textElements[i].parentNode.remove();
     }
   }
@@ -2678,3 +2437,38 @@ function downloadSVG() {
   downloadLink.click();
   document.body.removeChild(downloadLink);
 }
+
+function showBeaconDialog() {
+  $('#beaconModal').modal('show');
+}
+
+$('#beaconModal').on('hidden.bs.modal', function (e) {
+  GetBeaconID = document.getElementById('inputBeaconID').value;
+  beaconID.push(GetBeaconID);
+})
+
+function showShelfDialog() {
+  $('#shelfModal').modal('show');
+}
+
+$('#shelfModal').on('hidden.bs.modal', function (e) {
+  GetShelfID = document.getElementById('inputShelfID').value;
+  shelfID.push(GetShelfID);
+});
+
+var inputBeaconID = document.getElementById("inputBeaconID");
+inputBeaconID.addEventListener("keypress", function(event) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    document.getElementById("beaconModalBtn").click();
+  }
+});
+
+var inputShelfID = document.getElementById("inputShelfID");
+inputShelfID.addEventListener("keypress", function(event) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    document.getElementById("shelfModalBtn").click();
+  }
+});
+

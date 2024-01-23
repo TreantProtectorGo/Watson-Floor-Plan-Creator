@@ -183,7 +183,7 @@
   <div id="objBoundingBox" class="leftBox" style="overflow: auto;">
     <h2>Modify object</h2>
     <hr/>
-    <section id="objBoundingBoxScale">
+    <section id="objBoundingBoxScale" style="display: none;">
       <p>Length [<span id="bboxWidthScale"></span>] : <span id="bboxWidthVal"></span> cm</span></p>
       <input type="number" id="bboxWidth" step="1" style="width: 100%;" /> 
       <p>Width [<span id="bboxHeightScale"></span>] : <span id="bboxHeightVal"></span> cm</span></p>
@@ -205,8 +205,8 @@
       <input type="number" id="bboxBeamHeight" step="1" style="width: 100%;" /> 
     </section>
     <br/>
-    <section id="objColumnType">
-      <p>Type of Column :</p>
+    <section id="objColumnType" style="display: none;">
+      <p>Type of Beacon :</p>
       <select name="" id="typeColumn" class="form-control">
         <option value="">--select--</option>
         <option value="type 1">Type 1</option>
@@ -265,7 +265,7 @@
     
 
     <section id="objStairType">
-      <p>Type of Stair :</p>
+      <p>Type of Shelf :</p>
       <select name="" id="typeStair" class="form-control">
         <option value="">--select--</option>
         <option value="type 1">Type 1</option>
@@ -297,7 +297,7 @@
       <button class="btn btn-info" id="bboxStepsMinus"><i class="fa fa-minus" aria-hidden="true"></i></button>
     </div>
 
-    <div id="objBoundingBoxColor" >
+    <div id="objBoundingBoxColor" style="display: none;">
       <div class="color textEditorColor" data-type="gradientRed" style="color:#f55847;background:linear-gradient(30deg, #f55847, #f00);"></div>
       <div class="color textEditorColor" data-type="gradientYellow" style="color:#e4c06e;background:linear-gradient(30deg,#e4c06e, #ffb000);"></div>
       <div class="color textEditorColor" data-type="gradientGreen" style="color:#88cc6c;background:linear-gradient(30deg,#88cc6c, #60c437);"></div>
@@ -314,7 +314,7 @@
     </div>
 
     <br/><br/>
-    <button class="btn btn-danger fully" id="bboxTrash"><i class="fa fa-2x fa-trash-o" aria-hidden="true"></i></button>
+    <button class="btn btn-danger fully" id="bboxTrash"><i class="fa fa-2x fa-trash" aria-hidden="true"></i></button>
     <button class="btn btn-info fully" style="margin-top:20px" onclick="fonc_button('select_mode');$('#boxinfo').html('Select mode');$('#objBoundingBox').hide(100);$('#panel').show(200);binder.graph.remove();delete binder;"><i class="fa fa-2x fa-backward" aria-hidden="true" ></i></button>
   </div>
 
@@ -462,10 +462,9 @@
       <button class="btn btn-default fully " style="display: none;" id="partition_mode" data-toggle="tooltip" data-placement="right" title="Make partitions wall">PARTITION</button>
       </li>
 
-      <li><button class="btn btn-default fully column" id="column" data-toggle="tooltip" data-placement="right" title="Make beacon">Beacon</button></li>
+      <li><button class="btn btn-default fully column" id="column" data-toggle="tooltip" data-placement="right" title="Make beacon" onclick="showBeaconDialog()">Beacon</button></li>
 
-      <li><button class="btn btn-default fully object" id="stair_mode" onclick="$('.sub').hide();$('#door_list').hide()">Stair</button></li>
-
+      <li><button class="btn btn-default fully object" id="stair_mode" onclick="$('.sub').hide();$('#door_list').hide();showShelfDialog()">Shelf</button></li>
 
       <div id="energy_list"  class="list-unstyled sub" style="display:none">
         <div style="width:700px;padding:10px">
@@ -581,8 +580,44 @@
   </ul>
   </div>
    
-    
+  <div class="modal fade" id="beaconModal" tabindex="-1" aria-labelledby="beaconModalLabel" data-backdrop="static">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="beaconModalLabel">Setting</h5>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="inputBeaconID" class="col-form-label">Enter Beacon ID:</label>
+            <input type="text" class="form-control" id="inputBeaconID">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="beaconModalBtn" data-dismiss="modal">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
   
+  <div class="modal fade" id="shelfModal" tabindex="-1" aria-labelledby="shelfModalLabel" data-backdrop="static">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="shelfModalLabel">Setting</h5>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="inputShelfID" class="col-form-label">Enter Shelf Name:</label>
+            <input type="text" class="form-control" id="inputShelfID">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="shelfModalBtn" data-dismiss="modal">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="modal fade col-xs-9 col-md-12" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" >
     <div class="modal-dialog" role="document">
       <div class="modal-content">

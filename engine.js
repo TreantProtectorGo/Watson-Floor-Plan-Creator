@@ -1843,25 +1843,26 @@ event.preventDefault();
               OBJDATA.splice(OBJDATA.indexOf(objTarget), 1);
               $('#boxinfo').html('Measure deleted !');
             }
+            // modifition
             if (moveObj < 1 && objTarget.params.move) {
-              if (!objTarget.params.resize) $('#objBoundingBoxScale').hide();
-              else $('#objBoundingBoxScale').fadeIn(800);
+              // if (!objTarget.params.resize) $('#objBoundingBoxScale').hide();
+              // else $('#objBoundingBoxScale').fadeIn(800);
               if (!objTarget.params.rotate) $('#objBoundingBoxRotation').hide();
               else $('#objBoundingBoxRotation').fadeIn(800);
-              if (!objTarget.params.columnHeight) $('#objColumnHeight').hide();
-              else $('#objColumnHeight').fadeIn(800)
+              // if (!objTarget.params.columnHeight) $('#objColumnHeight').hide();
+              // else $('#objColumnHeight').fadeIn(800)
               if (!objTarget.params.beamHeight) $('#objBeamHeight').hide();
               else $('#objBeamHeight').fadeIn(800)
-              if (!objTarget.params.waistSlabThickness) $('#objWaistSlabThickness').hide();
-              else $('#objWaistSlabThickness').fadeIn(800)
-              if (!objTarget.params.stepsBase) $('#objStepsBase').hide();
-              else $('#objStepsBase').fadeIn(800)
-              if (!objTarget.params.stepsHeight) $('#objStepsHeight').hide();
-              else $('#objStepsHeight').fadeIn(800)
+              // if (!objTarget.params.waistSlabThickness) $('#objWaistSlabThickness').hide();
+              // else $('#objWaistSlabThickness').fadeIn(800)
+              // if (!objTarget.params.stepsBase) $('#objStepsBase').hide();
+              // else $('#objStepsBase').fadeIn(800)
+              // if (!objTarget.params.stepsHeight) $('#objStepsHeight').hide();
+              // else $('#objStepsHeight').fadeIn(800)
               if (!objTarget.params.slabFloorOffsetHeight) $('#objSlabFloorOffsetHeight').hide();
               else $('#objSlabFloorOffsetHeight').fadeIn(800)
-              if (!objTarget.params.typeColumn) $('#objColumnType').hide();
-              else $('#objColumnType').fadeIn(800)
+              // if (!objTarget.params.typeColumn) $('#objColumnType').hide();
+              // else $('#objColumnType').fadeIn(800)
               if (!objTarget.params.typeBeam) $('#objBeamType').hide();
               else $('#objBeamType').fadeIn(800)
               if (!objTarget.params.typeSlabFloor) $('#objSlabFloorType').hide();
@@ -1887,15 +1888,16 @@ event.preventDefault();
               
               $('#stepsCounter').hide();
               $('#objStairType').hide();
+              // modifition
               if (objTarget.class == 'stair') {
                 document.getElementById("bboxStepsVal").textContent = objTarget.value;
-                $('#stepsCounter').show();
-                $('#objStairType').show();
+                // $('#stepsCounter').show();
+                // $('#objStairType').show();
               }
 
-              
+              // modifition
               if(objTarget.class && (objTarget.class === 'text' || objTarget.fill) && objTarget.class != 'stair'){
-                document.getElementById('objBoundingBoxColor').style.display = 'block';
+                // document.getElementById('objBoundingBoxColor').style.display = 'block';
                 if(objTarget.class === 'text'){
                   document.getElementById('objBoundingBox').style.width = '133px';
                 }
