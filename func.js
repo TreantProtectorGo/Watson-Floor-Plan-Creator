@@ -2368,21 +2368,23 @@ function carpentryCalc(classObj, typeObj, sizeObj, thickObj, dividerObj = 10, fi
     var beaconName =  "beacon";
     if (typeObj == 'simpleColumn'){
       let indexOverTwo = Math.floor(beaconIndex/2);
+
       if (indexOverTwo < beaconID.length) {
-      construc.push({'path': "m "+(-sizeObj/2)+","+(-thickObj/2)+" l "+(sizeObj)+",0 l0,"+(thickObj)+" l"+(-sizeObj)+",0 Z", 'fill': fill, 'stroke': "red", 'strokeDashArray': '-'});
-      construc.push({'text': beaconID[indexOverTwo], 'x': '0', 'y':'-6', 'fill': "#333333", 'stroke': "black", 'fontSize': '0.75em',"strokeWidth": "0.4px"});
-      construc.push({'text': beaconName, 'x': '0', 'y':'7', 'fill': "#333333", 'stroke': "black", 'fontSize': '0.75em',"strokeWidth": "0.4px"});
-      construc.family = 'stick';
-      console.log("indexOverTwo " + indexOverTwo + " beaconID " + beaconID[beaconIndex])
+        // construc.push({'path': "m "+(-sizeObj/2)+","+(-thickObj/2)+" l "+(sizeObj)+",0 l0,"+(thickObj)+" l"+(-sizeObj)+",0 Z", 'fill': fill, 'stroke': "red", 'strokeDashArray': '-'});
+        construc.push({'path':qSVG.circlePath(0, 0, 150), 'fill': "transparent", 'stroke': "#000", 'strokeDashArray': ''});
+        construc.push({'text': beaconID[indexOverTwo], 'x': '0', 'y':'-6', 'fill': "#333333", 'stroke': "black", 'fontSize': '1.1em',"strokeWidth": "0.4px"});
+        construc.push({'text': beaconName, 'x': '0', 'y':'7', 'fill': "#333333", 'stroke': "black", 'fontSize': '1.1em',"strokeWidth": "0.4px"});
+        construc.family = 'stick';
+        console.log("indexOverTwo " + indexOverTwo + " beaconID " + beaconID[beaconIndex])
       } else {
-        construc.push({'path': "m "+(-sizeObj/2)+","+(-thickObj/2)+" l "+(sizeObj)+",0 l0,"+(thickObj)+" l"+(-sizeObj)+",0 Z", 'fill': fill, 'stroke': "red", 'strokeDashArray': '-'});
-        construc.push({'text': GetBeaconID, 'x': '0', 'y':'-6', 'fill': "#333333", 'stroke': "black", 'fontSize': '0.75em',"strokeWidth": "0.4px"});
-        construc.push({'text': beaconName, 'x': '0', 'y':'7', 'fill': "#333333", 'stroke': "black", 'fontSize': '0.75em',"strokeWidth": "0.4px"});
+        // construc.push({'path': "m "+(-sizeObj/2)+","+(-thickObj/2)+" l "+(sizeObj)+",0 l0,"+(thickObj)+" l"+(-sizeObj)+",0 Z", 'fill': fill, 'stroke': "red", 'strokeDashArray': '-'});
+        construc.push({'path':qSVG.circlePath(0, 0, 150), 'fill': "transparent", 'stroke': "#000", 'strokeDashArray': ''});
+        construc.push({'text': GetBeaconID, 'x': '0', 'y':'-6', 'fill': "#333333", 'stroke': "black", 'fontSize': '1.1em',"strokeWidth": "0.4px"});
+        construc.push({'text': beaconName, 'x': '0', 'y':'7', 'fill': "#333333", 'stroke': "black", 'fontSize': '1.1em',"strokeWidth": "0.4px"});
         construc.family = 'stick';
         console.log("beaconIndex " + beaconIndex + " beaconID " + GetBeaconID)
       }
-
-      //classObj, typeObj, sizeObj, thickObj,
+      // classObj, typeObj, sizeObj, thickObj,
       // console.log("typeObj")
       // console.log(typeObj)
       // console.log("sizeObj")
