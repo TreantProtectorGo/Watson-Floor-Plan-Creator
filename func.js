@@ -46,7 +46,6 @@ let GetBeaconID = '';
 let shelfID = [];
 let GetShelfID = '';
 let shelfIndex = 0;
-let canRunObjectMode = true;
 
 // SERVICE WORKER //
 window.addEventListener('load', () => {
@@ -279,8 +278,8 @@ function importPlan(){
       localStorage.setItem('history', JSON.stringify(HISTORY));
       load(0);
       save();
-      
-      //$('#myModal').modal('toggle')
+      save();
+      // $('#myModal').modal('toggle')
     }catch(e){
       console.log(e)
       alert('Invalid File Provided');
@@ -2246,6 +2245,19 @@ $('#roof').click(function(){
   fonc_button('object_mode', this.id, this.id)
 })
 
+$('.column').click(function(){
+  $('#lin').css('cursor', 'crosshair');
+  // multi = 0
+  $('#boxinfo').html('Add a beacon');
+  fonc_button('object_mode', this.id, this.id)
+})
+
+$('#stair_mode').click(function() {
+  cursor('move');
+  $('#boxinfo').html('Add a stelf');
+  fonc_button('object_mode', 'simpleStair');
+});
+
 $('#node_mode').click(function() {
     $('#boxinfo').html('Cutting a wall <br/> <span style = \"font-size: 0.7em \"> Caution: Cutting the wall of a room can cancel its configuration</span>');
     fonc_button('node_mode');
@@ -2426,38 +2438,12 @@ function showBeaconDialog() {
 
 $('#beaconModal').on('hidden.bs.modal', function (e) {
   GetBeaconID = document.getElementById('inputBeaconID').value;
-  // if (GetBeaconID === '') {
-  //   alert('Beacon ID cannot be empty');
-  //   canRunObjectMode = false;
-  //   return;
-  // }
   beaconID.push(GetBeaconID);
-  canRunObjectMode = true;
 })
 
 $('#shelfModal').on('hidden.bs.modal', function (e) {
   GetShelfID = document.getElementById('inputShelfID').value;
-  // if (GetShelfID === '') {  
-  //   alert('Shelf ID cannot be empty');
-  //   canRunObjectMode = false;
-  //   return;
-  // }
   shelfID.push(GetShelfID); 
-  canRunObjectMode = true;
-});
-
-
-$('.column').click(function(){
-  $('#lin').css('cursor', 'crosshair');
-  // multi = 0
-  $('#boxinfo').html('Add a beacon');
-  fonc_button('object_mode', this.id, this.id)
-})
-
-$('#stair_mode').click(function() {
-  cursor('move');
-  $('#boxinfo').html('Add a stelf');
-  fonc_button('object_mode', 'simpleStair');
 });
 
 function showShelfDialog() {

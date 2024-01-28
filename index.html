@@ -11,7 +11,20 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-
+<style>
+  dialog > p {
+    text-align: center;
+    margin: 0;
+  }
+  dialog > p:first-of-type {
+    margin: 0 auto 20px;
+    font-size: 32px;
+    font-weight: 600;
+  }
+  dialog > button {
+    margin: 20px auto;
+  }
+</style>
 <body style="background:#f2eee5;margin:0;padding:0;" ontouchstart='swipe(event)'>
   <span class="loading_screen">Loading..</span>
   <header>Floor Plan App Ver.0.1</header>
@@ -464,7 +477,7 @@
 
       <li><button class="btn btn-default fully column" id="column" data-toggle="tooltip" data-placement="right" title="Make beacon" onclick="showBeaconDialog()">Beacon</button></li>
 
-      <li><button class="btn btn-default fully object" id="stair_mode" onclick="showShelfDialog()">Shelf</button></li>
+      <li><button class="btn btn-default fully object" id="stair_mode" onclick="$('.sub').hide();$('#door_list').hide();showShelfDialog()">Shelf</button></li>
 
       <div id="energy_list"  class="list-unstyled sub" style="display:none">
         <div style="width:700px;padding:10px">
@@ -579,7 +592,7 @@
     <div style="clear:both"></div>
   </ul>
   </div>
-   
+  
   <div class="modal fade" id="beaconModal" tabindex="-1" aria-labelledby="beaconModalLabel" data-backdrop="static">
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
@@ -589,7 +602,7 @@
         <div class="modal-body">
           <div class="form-group">
             <label for="inputBeaconID" class="col-form-label">Enter Beacon ID:</label>
-            <input type="text" class="form-control" id="inputBeaconID">
+            <input type="text" class="form-control" id="inputBeaconID" required>
           </div>
         </div>
         <div class="modal-footer">
@@ -607,8 +620,8 @@
         </div>
         <div class="modal-body">
           <div class="form-group">
-            <label for="inputShelfID" class="col-form-label">Enter Shelf Name:</label>
-            <input type="text" class="form-control" id="inputShelfID">
+            <label for="inputShelfID" class="col-form-label" >Enter Shelf Name:</label>
+            <input type="text" class="form-control" id="inputShelfID" required>
           </div>
         </div>
         <div class="modal-footer">
@@ -617,6 +630,14 @@
       </div>
     </div>
   </div>
+
+  <dialog class="modal">
+    <form>
+      <label for="inputBeaconID" class="col-form-label">Enter Beacon ID:</label>
+      <input type="text" class="form-control" id="inputBeaconID" required>
+      <input type="submit" value="Save" class="btn btn-primary">
+    </form>
+  </dialog>
 
   <div class="modal fade col-xs-9 col-md-12" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" >
     <div class="modal-dialog" role="document">
