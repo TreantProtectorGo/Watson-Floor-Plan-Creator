@@ -184,9 +184,9 @@
     <h2>Modify object</h2>
     <hr/>
     <section id="objBoundingBoxScale" style="display: none;">
-      <p>Length [<span id="bboxWidthScale"></span>] : <span id="bboxWidthVal"></span> cm</span></p>
-      <input type="number" id="bboxWidth" step="1" style="width: 100%;" /> 
-      <p>Width [<span id="bboxHeightScale"></span>] : <span id="bboxHeightVal"></span> cm</span></p>
+      <p style="display: none;">Length [<span id="bboxWidthScale"></span>] : <span id="bboxWidthVal"></span> cm</span></p>
+      <input style="display: none;" type="number" id="bboxWidth" step="1" style="width: 100%;" /> 
+      <p>Height [<span id="bboxHeightScale"></span>] : <span id="bboxHeightVal"></span> cm</span></p>
       <input type="number" id="bboxHeight" step="1" style="width: 100%;" />
     </section>
 
@@ -464,7 +464,7 @@
 
       <li><button class="btn btn-default fully column" id="column" data-toggle="tooltip" data-placement="right" title="Make beacon" onclick="showBeaconDialog()">Beacon</button></li>
 
-      <li><button class="btn btn-default fully object" id="stair_mode" onclick="$('.sub').hide();$('#door_list').hide();showShelfDialog()">Shelf</button></li>
+      <li><button class="btn btn-default fully object" id="stair_mode" onclick="showShelfDialog()">Shelf</button></li>
 
       <div id="energy_list"  class="list-unstyled sub" style="display:none">
         <div style="width:700px;padding:10px">

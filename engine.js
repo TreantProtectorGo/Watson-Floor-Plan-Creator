@@ -1845,8 +1845,8 @@ event.preventDefault();
             }
             // modifition
             if (moveObj < 1 && objTarget.params.move) {
-              // if (!objTarget.params.resize) $('#objBoundingBoxScale').hide();
-              // else $('#objBoundingBoxScale').fadeIn(800);
+              if (!objTarget.params.resize) $('#objBoundingBoxScale').hide();
+              else $('#objBoundingBoxScale').fadeIn(800);
               if (!objTarget.params.rotate) $('#objBoundingBoxRotation').hide();
               else $('#objBoundingBoxRotation').fadeIn(800);
               // if (!objTarget.params.columnHeight) $('#objColumnHeight').hide();

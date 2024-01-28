@@ -46,6 +46,7 @@ let GetBeaconID = '';
 let shelfID = [];
 let GetShelfID = '';
 let shelfIndex = 0;
+let canRunObjectMode = true;
 
 // SERVICE WORKER //
 window.addEventListener('load', () => {
@@ -210,6 +211,7 @@ function initHistory(boot = false) {
   //$('#myModal').modal('toggle')
 
   HISTORY.index = 0;
+  console.log('initHistory() : updateFloorSelect()')
   if (!boot && localStorage.getItem('history')) localStorage.removeItem('history');
     if (localStorage.getItem('history') && boot == "recovery") {
       var historyTemp = JSON.parse(localStorage.getItem('history'));
@@ -249,16 +251,7 @@ function importPlan(){
         alert('JSON is not a valid Plan Type')
         return;
       }
-      // const objData = getJson()
-      // let beaconIndexs = []
-
-      // for loop:
-      //     if beacon
-      //         beaconIndexs.push(i)
-      //         text = objData[i].beaconID
-      //         writeText
-
-      // beaconID = obj.data[0].objData[0].beaconID;
+      
       for (var i = 0; i < obj.data[0].objData.length; i++) {
         if (obj.data[0].objData[i].hasOwnProperty("beaconID")) {
           beaconID.push(obj.data[0].objData[i].beaconID)
@@ -273,7 +266,7 @@ function importPlan(){
       }
       shelfID = shelfID.reverse();
 
-      console.log('IMPORT JSON FILE')
+      console.log('importPlan()')
       console.log(obj)
       console.log(obj.data)
       console.log(beaconID)
@@ -2243,13 +2236,6 @@ $('.beam').click(function(){
     fonc_button('object_mode', this.id, this.id);
 })
 
-$('.column').click(function(){
-  $('#lin').css('cursor', 'crosshair');
-  // multi = 0
-  $('#boxinfo').html('Add a beacon');
-  fonc_button('object_mode', this.id, this.id)
-})
-
 $('#slab').click(function(){
   $('#boxinfo').html('Slab Added');
   fonc_button('object_mode', this.id, this.id)
@@ -2259,12 +2245,6 @@ $('#roof').click(function(){
   $('#boxinfo').html('Roof Added');
   fonc_button('object_mode', this.id, this.id)
 })
-
-$('#stair_mode').click(function() {
-    cursor('move');
-    $('#boxinfo').html('Add a stair');
-    fonc_button('object_mode', 'simpleStair');
-});
 
 $('#node_mode').click(function() {
     $('#boxinfo').html('Cutting a wall <br/> <span style = \"font-size: 0.7em \"> Caution: Cutting the wall of a room can cancel its configuration</span>');
@@ -2347,7 +2327,7 @@ function carpentryCalc(classObj, typeObj, sizeObj, thickObj, dividerObj = 10, fi
         console.log("shelfIndex " + shelfIndex + " beaconID " + GetShelfID)
       }
       construc.params.resizeLimit.width = {min:40, max:200};
-      construc.params.resizeLimit.height = {min:40, max:400};
+      construc.params.resizeLimit.height = {min:40, max:1000};
       console.log('shelf beaconIndex' + beaconIndex)
     }
     //index++ is needed
@@ -2446,17 +2426,43 @@ function showBeaconDialog() {
 
 $('#beaconModal').on('hidden.bs.modal', function (e) {
   GetBeaconID = document.getElementById('inputBeaconID').value;
+  // if (GetBeaconID === '') {
+  //   alert('Beacon ID cannot be empty');
+  //   canRunObjectMode = false;
+  //   return;
+  // }
   beaconID.push(GetBeaconID);
+  canRunObjectMode = true;
 })
+
+$('#shelfModal').on('hidden.bs.modal', function (e) {
+  GetShelfID = document.getElementById('inputShelfID').value;
+  // if (GetShelfID === '') {  
+  //   alert('Shelf ID cannot be empty');
+  //   canRunObjectMode = false;
+  //   return;
+  // }
+  shelfID.push(GetShelfID); 
+  canRunObjectMode = true;
+});
+
+
+$('.column').click(function(){
+  $('#lin').css('cursor', 'crosshair');
+  // multi = 0
+  $('#boxinfo').html('Add a beacon');
+  fonc_button('object_mode', this.id, this.id)
+})
+
+$('#stair_mode').click(function() {
+  cursor('move');
+  $('#boxinfo').html('Add a stelf');
+  fonc_button('object_mode', 'simpleStair');
+});
 
 function showShelfDialog() {
   $('#shelfModal').modal('show');
 }
-
-$('#shelfModal').on('hidden.bs.modal', function (e) {
-  GetShelfID = document.getElementById('inputShelfID').value;
-  shelfID.push(GetShelfID);
-});
 
 var inputBeaconID = document.getElementById("inputBeaconID");
 inputBeaconID.addEventListener("keypress", function(event) {
