@@ -316,6 +316,8 @@ document.getElementById('exportJson').addEventListener("click", function() {
   if (localStorage.getItem('history')) {
     var data = JSON.parse(localStorage.getItem('history'));
     data = JSON.parse(data[data.length-1]);
+    var saveShelfIDCopy = JSON.parse(JSON.stringify(shelfID));
+    var saveBeaconIDCopy = JSON.parse(JSON.stringify(beaconID));
     // for wall data
     var total_wall_length = 0
     var wall_length_floor = 0
@@ -379,6 +381,7 @@ document.getElementById('exportJson').addEventListener("click", function() {
           data.data[i].objData[j]['volume'] = volume
           data.data[i].objData[j]['beaconID'] = saveBeaconID[beaconID.length - 1]
           saveBeaconID.pop()
+          console.log(saveBeaconID)
         }else if(tempData[i].objData[j]['class'] == 'slab'){
           area = ((tempData[i].objData[j].size * 100 / (meter * meter)) * (tempData[i].objData[j].thick * 100 / (meter * meter))).toFixed(2)
           volume = ((tempData[i].objData[j].slabFloorOffsetHeight / meter) * (tempData[i].objData[j].size * 100 / (meter * meter)) * (tempData[i].objData[j].thick * 100 / (meter * meter))).toFixed(2)
@@ -394,10 +397,12 @@ document.getElementById('exportJson').addEventListener("click", function() {
           data.data[i].objData[j]['volume'] = volume
           data.data[i].objData[j]['shelfID'] = saveShelfID[shelfID.length - 1]
           saveShelfID.pop()
+          console.log(saveShelfID)
         }
       }
     }
-
+    beaconID = saveBeaconIDCopy
+    shelfID = saveShelfIDCopy
     var name = document.getElementById('project_name').value;
 
     const date = new Date();
