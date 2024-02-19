@@ -276,6 +276,7 @@ function importPlan(){
       HISTORY[0] = JSON.stringify(HISTORY[0]);
       HISTORY.index = 0;
       localStorage.setItem('history', JSON.stringify(HISTORY));
+
       load(0);
       save();
       save();
@@ -287,6 +288,7 @@ function importPlan(){
   };
   reader.readAsText(files[0]);
 }
+
 
 document.getElementById('redo').addEventListener("click", function() {
   if (HISTORY.index < HISTORY.length) {
@@ -2407,9 +2409,11 @@ function carpentryCalc(classObj, typeObj, sizeObj, thickObj, dividerObj = 10, fi
 function downloadSVG() {
   var svg = document.getElementById("lin");
   var clonedSvg = svg.cloneNode(true); 
-
+  clonedSvg.style.pointerEvents = "none";
   var boxArea = clonedSvg.getElementById('boxArea');
   var boxRib = clonedSvg.getElementById('boxRib');
+  var boxgrid = clonedSvg.getElementById('boxgrid');
+  var boxbind = clonedSvg.getElementById('boxbind');
 
   var boxcarpentry = clonedSvg.getElementById('boxcarpentry');
   var textElements = boxcarpentry.querySelectorAll('text');
@@ -2422,6 +2426,8 @@ function downloadSVG() {
   
   clonedSvg.removeChild(boxArea);
   clonedSvg.removeChild(boxRib);
+  clonedSvg.removeChild(boxgrid);
+  clonedSvg.removeChild(boxbind);
 
   var svgData = new XMLSerializer().serializeToString(clonedSvg);
   var blob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
